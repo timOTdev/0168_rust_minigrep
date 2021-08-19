@@ -1,4 +1,5 @@
 use std::env;
+use std::fs;
 
 fn main() {
     // Collect the args into a vector of strings.
@@ -8,24 +9,38 @@ fn main() {
     let query = &args[1];
     let filename = &args[2];
 
-    // Return all the args.
+    // ==Return all the args.
+    println!("===");
     println!("{:?}", args);
-
-    // Returns the saved args.
+    
+    // ==Returns the saved args.
+    println!("===");
     println!("Searching for {}", query);
+    
+    // Print out the filename and contents.
+    println!("===");
     println!("In file {}", filename);
 
-    // ==Output
-    // Compiling minigrep v0.1.0 (C:\timh1203\coding\rust_minigrep)
-    //     Finished dev [unoptimized + debuginfo] target(s) in 1.01s
-    //     Running `target\debug\minigrep.exe test sample.txt`
-    // Searching for test
-    // In file sample.txt
-    // PS C:\timh1203\coding\rust_minigrep> cargo run test sample.txt
-    // Compiling minigrep v0.1.0 (C:\timh1203\coding\rust_minigrep)
-    //     Finished dev [unoptimized + debuginfo] target(s) in 0.73s
-    //     Running `target\debug\minigrep.exe test sample.txt`
-    // ["target\\debug\\minigrep.exe", "test", "sample.txt"]
-    // Searching for test
-    // In file sample.txt
+    let contents = fs::read_to_string(filename)
+        .expect("Something went wrong reading the file");
+
+    println!("With text:\n{}", contents);
+
+    // ==Output running `cargo run the poem.txt`
+    // ===
+    // ["target\\debug\\minigrep.exe", "the", "poem.txt"]
+    // ===
+    // Searching for the
+    // ===
+    // In file poem.txt
+    // With text:
+    // I'm nobody! Who are you?
+    // Are you nobody, too?
+    // Then there's a pair of us - don't tell!
+    // They'd banish us, you know.
+
+    // How dreary to be somebody!
+    // How public, like a frog
+    // To tell your name the livelong day
+    // To an admiring bog!
 }
