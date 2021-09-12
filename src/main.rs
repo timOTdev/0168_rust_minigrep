@@ -6,25 +6,26 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     // Pull out individual args.
+    // Index 0 is the binary so we skip that.
     let query = &args[1];
     let filename = &args[2];
 
     // ==Return all the args.
-    println!("===");
-    println!("{:?}", args);
+    println!("===args: {:?}", args);
     
     // ==Returns the saved args.
-    println!("===");
-    println!("Searching for {}", query);
+    println!("===query: {}", query);
     
     // Print out the filename and contents.
-    println!("===");
-    println!("In file {}", filename);
+    println!("===filename: {}", filename);
 
+    // This opens the file and returns Result type.
+    // Use expect() to handle Ok and Err.
     let contents = fs::read_to_string(filename)
         .expect("Something went wrong reading the file");
 
-    println!("With text:\n{}", contents);
+    // Prints out the contents of the file.
+    println!("===contents:\n{}", contents);
 
     // ==Output running `cargo run the poem.txt`
     // ===
