@@ -1,9 +1,30 @@
 use std::env;
 use std::fs;
+use std::process;
 
 struct Config {
     query: String,
     filename: String,
+}
+
+impl Config {
+    // Changed the fn name to new because it's a convention for naming constructors.
+    fn new(args: &[String]) -> Result<Config, &str> {
+        if args.len() < 3 {
+            return Err("Not enough parameters.");
+        }
+
+        // Pull out individual args.
+        // Index 0 is the binary so we skip that.
+        // We clone the strings here to not take ownership.
+        // Not performant but easiest to do right now.
+        let query = args[1].clone();
+        let filename = args[2].clone();
+
+        // Make a new config to relate the data.
+        // We returned a tuple before but that doesn't show relationship.
+        Ok(Config{query, filename})
+    }
 }
 
 fn main() {
@@ -11,7 +32,13 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     // Call the function to parse.
-    let config: Config = parse_config(&args);
+    // unwrap_or_else() returns Ok variant or runs this closure if error.
+    let config: Config = Config::new(&args).unwrap_or_else(|err| {
+        println!("Problem parsing arguments: {}", err);
+
+        // This terminates program with status code passed in.
+        process::exit(1);
+    });
 
     // Return all the args.
     println!("===args: {:?}", args);
@@ -47,17 +74,4 @@ fn main() {
     // How public, like a frog
     // To tell your name the livelong day
     // To an admiring bog!
-}
-
-fn parse_config(args: &[String]) -> Config {
-    // Pull out individual args.
-    // Index 0 is the binary so we skip that.
-    // We clone the strings here to not take ownership.
-    // Not performant but easiest to do right now.
-    let query = args[1].clone();
-    let filename = args[2].clone();
-
-    // Make a new config to relate the data.
-    // We returned a tuple before but that doesn't show relationship.
-    Config{query, filename}
 }
