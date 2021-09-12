@@ -1,6 +1,7 @@
 use std::env;
 use std::fs;
 use std::process;
+use std::error::Error;
 
 struct Config {
     query: String,
@@ -49,13 +50,26 @@ fn main() {
     // Print out the filename and contents.
     println!("===filename: {}", config.filename);
 
+    // run() also returns Result so we need to handle that with if-let.
+    // If we supply a file that doesn't exist, `cargo run test test.txt`
+    // The error returning -> The system cannot find the file specified. (os error 2)
+    if let Err(e) = run(config) {
+        println!("===Application error: {}", e);
+        process::exit(1);
+    }
+}
+
+fn run(config:Config) -> Result<(), Box<dyn Error>> {
     // This opens the file and returns Result type.
     // Use expect() to handle Ok and Err.
-    let contents = fs::read_to_string(config.filename)
-        .expect("Something went wrong reading the file");
+    // ? handles Result error type and returns it from the function.
+    let contents = fs::read_to_string(config.filename)?;
 
     // Prints out the contents of the file.
     println!("===contents:\n{}", contents);
+
+    // Returns unit type if it reaches here.
+    Ok(())
 
     // ==Output running `cargo run the poem.txt`
     // ===
