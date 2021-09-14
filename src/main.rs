@@ -12,7 +12,7 @@ fn main() {
     // Call the function to parse.
     // unwrap_or_else() returns Ok variant or runs this closure if error.
     let config: Config = Config::new(&args).unwrap_or_else(|err| {
-        println!("Problem parsing arguments: {}", err);
+        eprintln!("Problem parsing arguments: {}", err);
 
         // This terminates program with status code passed in.
         process::exit(1);
@@ -32,7 +32,7 @@ fn main() {
     // The error returning -> The system cannot find the file specified. (os error 2)
     // Use of minigrep app name to use the function stored in lib.rs.
     if let Err(e) = minigrep::run(config) {
-        println!("===Application error: {}", e);
+        eprintln!("===Application error: {}", e);
         process::exit(1);
     }
 }
