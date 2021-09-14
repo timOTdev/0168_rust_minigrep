@@ -1,5 +1,6 @@
 use std::fs;
 use std::error::Error;
+use std::env;
 
 // Private by default, need to add pub to fn, struct, and fields.
 
@@ -12,9 +13,22 @@ pub fn run(config:Config) -> Result<(), Box<dyn Error>> {
     // // Prints out the contents of the file.
     // println!("===contents:\n{}", contents);
 
-    // We want to print out the whole line.
-    for line in search(&config.query, &contents) {
-      println!("{}", line);
+    // // We want to print out the whole line.
+    // for line in search(&config.query, &contents) {
+    //   println!("{}", line);
+    // }
+
+    // Now we want to use our case_sensitive field.
+    // Run appropriate fn based on boolean.
+    let results = if config.case_sensitive {
+      search(&config.query, &contents)
+    } else {
+      search_case_insensitive(&config.query, &contents)
+    };
+    
+    // We want to print out each line from results.
+    for line in results {
+        println!("{}", line);
     }
 
     // Returns unit type if it reaches here.
@@ -42,6 +56,7 @@ pub fn run(config:Config) -> Result<(), Box<dyn Error>> {
 pub struct Config {
     pub query: String,
     pub filename: String,
+    pub case_sensitive: bool,
 }
 
 impl Config {
@@ -57,10 +72,15 @@ impl Config {
         // Not performant but easiest to do right now.
         let query = args[1].clone();
         let filename = args[2].clone();
+        
+        // Need to add environmental variable.
+        // env::var returns Result item to check if exists.
+        // is_err checks if ok, and returns boolean.
+        let case_sensitive = env::var("CASE_INSENSITIVE").is_err();
 
         // Make a new config to relate the data.
         // We returned a tuple before but that doesn't show relationship.
-        Ok(Config{query, filename})
+        Ok(Config{query, filename, case_sensitive})
     }
 }
 
