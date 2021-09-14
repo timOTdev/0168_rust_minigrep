@@ -58,3 +58,26 @@ impl Config {
         Ok(Config{query, filename})
     }
 }
+
+// We need to implement lifetime because we are returning
+// a reference from the function.
+pub fn search<'a>(_query: &str, _contents: &'a str) -> Vec<&'a str> {
+  vec![]
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn one_result() {
+    let query = "duct";
+    let contents = "\
+Rust:
+safe, fast, productive.
+Pick three.";
+
+    // Uses search function and expect lines that contains our query.
+    assert_eq!(vec!["safe, fast, productive."], search(query, contents));
+  }
+}
