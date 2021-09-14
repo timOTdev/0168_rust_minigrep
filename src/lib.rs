@@ -9,8 +9,13 @@ pub fn run(config:Config) -> Result<(), Box<dyn Error>> {
     // ? handles Result error type and returns it from the function.
     let contents = fs::read_to_string(config.filename)?;
 
-    // Prints out the contents of the file.
-    println!("===contents:\n{}", contents);
+    // // Prints out the contents of the file.
+    // println!("===contents:\n{}", contents);
+
+    // We want to print out the whole line.
+    for line in search(&config.query, &contents) {
+      println!("{}", line);
+    }
 
     // Returns unit type if it reaches here.
     Ok(())
@@ -61,8 +66,19 @@ impl Config {
 
 // We need to implement lifetime because we are returning
 // a reference from the function.
-pub fn search<'a>(_query: &str, _contents: &'a str) -> Vec<&'a str> {
-  vec![]
+pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+  // Add empty collection.
+  let mut results = Vec::new();
+
+  // Loop through each line of the contents.
+  for line in contents.lines() {
+    if line.contains(query) {
+      results.push(line);
+    }
+  }
+
+  // Return vector.
+  results
 }
 
 #[cfg(test)]
