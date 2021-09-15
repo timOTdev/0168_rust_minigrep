@@ -61,17 +61,36 @@ pub struct Config {
 
 impl Config {
     // Changed the fn name to new because it's a convention for naming constructors.
-    pub fn new(args: &[String]) -> Result<Config, &str> {
-        if args.len() < 3 {
-            return Err("Not enough parameters.");
-        }
+    // Now we changed it to take in Arg struct which is an Iterator.
+    // We need to make args mutable because we are iterating over it.
+    // We also need it to be a static string literal reference because it needs to
+    // last the whole program.
+    pub fn new(mut args: env::Args) -> Result<Config, &'static str> {
+        // The first iteration, we are discarding because it's just the path to the file.
+        args.next();
 
-        // Pull out individual args.
-        // Index 0 is the binary so we skip that.
-        // We clone the strings here to not take ownership.
-        // Not performant but easiest to do right now.
-        let query = args[1].clone();
-        let filename = args[2].clone();
+        // The next index will be our query from the command line.
+        // next() returns Result so we need to handle it.
+        // Note that we are taking ownership of the string.
+        let query = match args.next() {
+          Some(arg) => arg,
+          None => return Err("Didn't get a query string"),
+        };
+        
+        // Same thing with filename.
+        // Note that we are taking ownership of the string.
+        let filename = match args.next() {
+          Some(arg) => arg,
+          None => return Err("Didn't get a query string"),
+        };
+
+        // // Removed because we used Iterator instead.
+        // // Pull out individual args.
+        // // Index 0 is the binary so we skip that.
+        // // We clone the strings here to not take ownership.
+        // // Not performant but easiest to do right now.
+        // let query = args[1].clone();
+        // let filename = args[2].clone();
         
         // Need to add environmental variable.
         // env::var returns Result item to check if exists.
@@ -80,6 +99,7 @@ impl Config {
 
         // Make a new config to relate the data.
         // We returned a tuple before but that doesn't show relationship.
+        // Now, Config will take ownership of the 2 Iterable derived values.
         Ok(Config{query, filename, case_sensitive})
     }
 }
@@ -87,18 +107,25 @@ impl Config {
 // We need to implement lifetime because we are returning
 // a reference from the function.
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
-  // Add empty collection.
-  let mut results = Vec::new();
+  // We use iterators instead since it has built in methods.
+  // collect() knows the output type because we specified it on the output lifetime.
+  contents
+    .lines()
+    .filter(|line| line.contains(query))
+    .collect()
 
-  // Loop through each line of the contents.
-  for line in contents.lines() {
-    if line.contains(query) {
-      results.push(line);
-    }
-  }
+  // // Add empty collection.
+  // let mut results = Vec::new();
 
-  // Return vector.
-  results
+  // // Loop through each line of the contents.
+  // for line in contents.lines() {
+  //   if line.contains(query) {
+  //     results.push(line);
+  //   }
+  // }
+
+  // // Return vector.
+  // results
 }
 
 pub fn search_case_insensitive<'a>(

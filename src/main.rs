@@ -6,12 +6,14 @@ use std::process;
 use minigrep::Config;
 
 fn main() {
-    // Collect the args into a vector of strings.
-    let args: Vec<String> = env::args().collect();
+    // // Collect the args into a vector of strings.
+    // let args: Vec<String> = env::args().collect();
 
     // Call the function to parse.
     // unwrap_or_else() returns Ok variant or runs this closure if error.
-    let config: Config = Config::new(&args).unwrap_or_else(|err| {
+    // We removed the args (vector of strings) refererence and now just take
+    // in the Iterator directly.
+    let config: Config = Config::new(env::args()).unwrap_or_else(|err| {
         eprintln!("Problem parsing arguments: {}", err);
 
         // This terminates program with status code passed in.
